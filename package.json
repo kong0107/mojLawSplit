@@ -1,0 +1,10 @@
+{
+  "name": "mojLawSplit",
+  "version": "0.1.0",
+  "description": "將全國法規資料庫的 XML 檔切為許多小檔",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "author": "kong0107",
+  "license": "MIT"
+}
