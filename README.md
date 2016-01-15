@@ -4,7 +4,7 @@
 本專案僅保留程式碼，實際資料檔請連向：
 * [mojLawSplitXML](https://github.com/kong0107/mojLawSplitXML)
 * [mojLawSplitJSON](https://github.com/kong0107/mojLawSplitJSON)
-* [原始資料](http://law.moj.gov.tw/PublicData/DevelopGuide.aspx)
+* [全國法規資料庫](http://law.moj.gov.tw/PublicData/DevelopGuide.aspx)
 
 ## Files
 * `xml/`: 切成小份的 XML 檔，每個檔均是一個法規。
@@ -20,8 +20,8 @@
 ## Usage & Update
 1. 安裝 Node.js 。
 2. 在目錄中執行 `npm install` 。
-2. 從[全國法規資料庫](http://law.moj.gov.tw/PublicData/DevelopGuide.aspx)下載法規資料檔，解壓縮成各 XML 檔後，存於 source 目錄。
-3. 執行指令 `npm start` 。（如無 `bash` ，請執行 `node main.js` ）
+2. 從全國法規資料庫下載法規資料檔，解壓縮成各 XML 檔後，存於 source 目錄。
+3. 執行指令 `npm start` 。（如無 `bash` ，請執行 `node main.js` 。）
 
 ## Input Data Source
 * 未包含所有命令，大多數自治條例與自治規則均未被包含。
