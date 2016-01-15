@@ -4,6 +4,7 @@
 本專案僅保留程式碼，實際資料檔請連向：
 * [mojLawSplitXML](https://github.com/kong0107/mojLawSplitXML)
 * [mojLawSplitJSON](https://github.com/kong0107/mojLawSplitJSON)
+* [原始資料](http://law.moj.gov.tw/PublicData/DevelopGuide.aspx)
 
 ## Files
 * `xml/`: 切成小份的 XML 檔，每個檔均是一個法規。
@@ -22,18 +23,19 @@
 2. 從[全國法規資料庫](http://law.moj.gov.tw/PublicData/DevelopGuide.aspx)下載法規資料檔，解壓縮成各 XML 檔後，存於 source 目錄。
 3. 執行指令 `npm start` 。（如無 `bash` ，請執行 `node main.js` ）
 
-## Details
-* 本專案「沒有」處理條文中的換行問題。
-* 原始檔中除了 BOM 外，另有一些奇怪的控制字元，例如「危險性機械及設備安全檢查規則」英文版第四條的結尾處。（[全國法規資料庫的網頁](http://law.moj.gov.tw/Eng/LawClass/LawAll.aspx?PCode=N0060039)亦是如此）
-
-### Aout the Data Source
+## Input Data Source
 * 未包含所有命令，大多數自治條例與自治規則均未被包含。
 * 未包含法律層級的修改紀錄。
+* 條文中有排版用的換行。（本專案並未移除之）
+* 檔首有三位元組的 BOM 。
+* 偶爾會出現控制字元，例如「危險性機械及設備安全檢查規則」英文版第四條的結尾處。（亦可於[全國法規資料庫的網頁](http://law.moj.gov.tw/Eng/LawClass/LawAll.aspx?PCode=N0060039)中發現該條文不正常結束）
+
+## Output
 
 ### XML
 * 輸出檔沒有 XML 宣告 `<?xml ... ?>` ，亦無 BOM 。
 * 輸出檔縮減了 XML 的縮排，但保留了 CDATA 中換行後的縮排。
-* 保留原始檔案中，沒有資料的標籤。
+* 保留了原始檔案中，沒有資料的標籤。
 * 已移除原始檔案中的控制字元（換行字元除外）。
 
 ### JSON
