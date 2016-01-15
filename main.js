@@ -1,61 +1,40 @@
 var fs = require("fs");
 var util = require("util");
 
-fs.readdir("./source", function(err, files) {
-	if(err || !files.length) {
-		console.error("Error on reading the `source` directory.");
-		return;
-	}
-	fs.mkdir("HisMingLing", function(err) {
-		if(err && err.code != "EEXIST") throw err;
-		setImmediate(parseFile, 0);
-	});
-
-	function parseFile(index) {
-		if(index >= files.length) return;
-		var s = files[index].split(".");
-		if(s.length != 2 || s[1] != "xml") {
-			setImmediate(parseFile, index + 1);
-			return;
+function mkdir(dir) {
+	var chunks = dir.split("/");
+	for(var i = 1; i <= chunks.length; ++i) {
+		var cur = chunks.slice(0, i).join("/");
+		try { fs.statSync(cur); }
+		catch(err) {
+			if(err.code == "ENOENT") fs.mkdirSync(cur);
+			else throw err;
 		}
-		console.log("Opening `%s`", files[index]);
-		fs.readFile("./source/" + files[index], "utf8", function(err, data) {
-			if(err) throw err;
-			console.log("File opened.");
-			var frags = data.split(/<\/?法規>/);
-
-			var update = frags[0].match(/UpdateDate="(\d+)"/)[1];
-			fs.writeFile("UpdateDate.txt", update, function(err) {
-				console.log("UpdateDate: %s", update);
-			});
-
-			var laws = [];
-			for(var j = 1; j < frags.length; j += 2)
-				laws.push(frags[j]);
-
-			parseLaws(laws, function() {
-				parseFile(index + 1);
-			});
-		})
 	}
-});
+}
 
-function parseLaws(xmlArr, callback) {
-	console.log("Parsing %d laws.", xmlArr.length);
+var files = fs.readdirSync("./source");
+if(!files.length) throw new Error("No files in `source` directory.");
 
-	function parseLaw(index) {
-		if(index >= xmlArr.length) {
-			console.log("\r\n%d laws parsed.", xmlArr.length);
-			setImmediate(callback);
-			return;
-		}
-		if(index && !(index % 100)) process.stdout.write(".");
-		var dir, filename;
+for(var i = 0; i < files.length; ++i) {
+	var s = files[i].split(".");
+	if(s.length != 2 || s[1] != "xml") continue;
+
+	console.log("Opening `%s`", files[i]);
+	var data = fs.readFileSync("./source/" + files[i], "utf8");
+	var frags = data.split(/<\/?法規>/);
+	var update = frags[0].match(/UpdateDate="(\d+)"/)[1];
+
+	fs.writeFileSync("UpdateDate.txt", update);
+	console.log("UpdateDate: %s", update);
+
+	for(var j = 1; j < frags.length; j+= 2) {
+		if((j % 100) == 1) process.stdout.write(".");
+		var filename, dir;
 		var xml = "<法規>"
-			+ xmlArr[index].replace(/\r\n    ( *)</g, "\r\n$1<")
+			+ frags[j].replace(/\r\n    ( *)</g, "\r\n$1<")
 			+ "</法規>\r\n"
 		;
-
 		if(/<異動日期>(\d+)<\/異動日期>/.test(xml)) {
 			var m = xml.match(/PCODE=(\w+)&LNNDATE=(\d+)&LSER=(\d+)/);
 			filename = util.format("HisMingLing/%s/%s_%s.xml", m[1], m[2], m[3]);
@@ -68,13 +47,8 @@ function parseLaws(xmlArr, callback) {
 			filename = util.format("%s%s/%s.xml", lang, type, pcode);
 			dir = lang + type;
 		}
-
-		fs.mkdir(dir, function(err) {
-			if(err && err.code != "EEXIST") throw err;
-			fs.writeFile(filename, xml, function(err) {
-				setImmediate(parseLaw, index + 1);
-			});
-		});
+		mkdir("./xml/" + dir);
+		fs.writeFileSync("./xml/" + filename, xml);
 	}
-	parseLaw(0);
+	console.log("\r\n%d laws parsed.", (frags.length - 1) / 2);
 }
