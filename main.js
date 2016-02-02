@@ -4,6 +4,9 @@ var x2j = require("xml2jsobj");
 
 var running = false;
 var queue = [];
+var dict = {};
+var allQueued = false;
+var update;
 
 function mkdir(dir) {
 	var chunks = dir.split("/");
@@ -28,7 +31,7 @@ for(var i = 0; i < files.length; ++i) {
 	console.log("Opening `%s`", files[i]);
 	var data = fs.readFileSync("./source/" + files[i], "utf8");
 	var frags = data.split(/<\/?法規>/);
-	var update = frags[0].match(/UpdateDate="(\d+)"/)[1];
+	update = frags[0].match(/UpdateDate="(\d+)"/)[1];
 
 	console.log("UpdateDate: %s", update);
 	fs.writeFileSync("./xml/UpdateDate.txt", update);
@@ -61,6 +64,7 @@ for(var i = 0; i < files.length; ++i) {
 		mkdir("./json/" + dir);
 		saveAsJSON(xml, "./json/" + filename.replace(".xml", ".json"));
 	}
+	allQueued = true;
 	console.log("\r\n%d laws parsed.", (frags.length - 1) / 2);
 }
 
@@ -72,6 +76,7 @@ function saveAsJSON(xml, filename) {
 function convert() {
 	if(!queue.length) {
 		running = false;
+		if(allQueued) outputDict();
 		return;
 	}
 	running = true;
@@ -131,6 +136,76 @@ function convert() {
 			}
 		}
 		fs.writeFileSync(args.filename, JSON.stringify(law, null, "\t"));
-		convert();
+
+		//
+		// 總匯
+		//
+		var PCode = law.法規網址.substr(law.法規網址.indexOf('PCODE') + 6, 8);
+		if(!dict[PCode]) dict[PCode] = {PCode: PCode};
+		if(law.異動日期) {	/// 歷史法規
+			if(!dict[PCode].updates) dict[PCode].updates = [];
+			dict[PCode].updates.push(law.異動日期);
+			if(!dict[PCode].oldNames) dict[PCode].oldNames = [];
+			if(dict[PCode].oldNames.indexOf(law.法規名稱) == -1)
+				dict[PCode].oldNames.push(law.法規名稱);
+		}
+		else if(law.中文法規名稱) dict[PCode].english = law.英文法規名稱;
+		else {
+			dict[PCode].name = law.法規名稱;
+			dict[PCode].lastUpdate = law.最新異動日期;
+		}
+
+		setImmediate(convert);
 	});
+}
+
+function outputDict() {
+	var result = [];
+
+	var stream = fs.createWriteStream('./xml/index.xml');
+	stream.write('<LAWS UpdateDate="' + update + '">');
+	for(var PCode in dict) {
+		var law = dict[PCode];
+		var pos;
+		if(law.oldNames && (pos = law.oldNames.indexOf(law.name)) != -1) {
+			law.oldNames.splice(pos, 1);
+			if(!law.oldNames.length) delete law.oldNames;
+		}
+		result.push(law);
+
+		var single = true;
+		stream.write(util.format(
+			'\r\n<LAW PCode="%s" name="%s" lastUpdate="%s"',
+			law.PCode, law.name, law.lastUpdate
+		));
+		if(law.english) stream.write(' english="' + law.english + '"');
+		if(law.updates) {
+			single = false;
+			stream.write('><UPDATES>');
+			law.updates.forEach(function(date) {
+				stream.write('<DATE>' + date + '</DATE>');
+			});
+			stream.write('</UPDATES>');
+		}
+		if(law.oldNames) {
+			if(single) {
+				single = false;
+				stream.write('>');
+			}
+			stream.write('<HISTORY>');
+			law.oldNames.forEach(function(name) {
+				stream.write('<NAME>' + name + '</NAME>');
+			});
+			stream.write('</HISTORY>');
+		}
+		stream.write(single ? '/>' : '</LAW>');
+	}
+
+	stream.end('\r\n</LAWS>\r\n', function(){
+		console.log('Written basic info of all into index.xml');
+	});
+	fs.writeFile('./json/index.json',
+		JSON.stringify(result).replace(/{"PCode/g, '\n{"PCode').slice(0, -1) + '\n]\n',
+		function() {console.log('Written basic info of all into index.json');}
+	);
 }
