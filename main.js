@@ -53,10 +53,9 @@ for(var i = 0; i < files.length; ++i) {
 		}
 		else {
 			var lang = (xml.indexOf("<中文法規名稱>") > -1) ? "Eng_" : "";
-			var type = (xml.indexOf("<法規性質>命令</法規性質>") > -1) ? "MingLing": "FalV";
 			var pcode = xml.match(/PCODE=(\w+)/)[1];
-			filename = util.format("%s%s/%s.xml", lang, type, pcode);
-			dir = lang + type;
+			filename = util.format("%sFalVMingLing/%s.xml", lang, pcode);
+			dir = lang + 'FalVMingLing';
 		}
 		mkdir("./xml/" + dir);
 		fs.writeFileSync("./xml/" + filename, xml);

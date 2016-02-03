@@ -7,14 +7,13 @@
 * [全國法規資料庫](http://law.moj.gov.tw/PublicData/DevelopGuide.aspx)
 
 ## Files
-* `xml/`: 切成小份的 XML 檔，每個檔均是一個法規。
+* `xml/`: 切成小份的 XML 檔，除了 `index.xml` 為彙整，其餘每個檔均是一個法規。
   * `UpdateDate.txt`: 法規更新日期
-  * `FalV/`: 中文法律資料檔
-  * `MingLing/`: 中文命令資料檔
-  * `Eng_FalV/`: 英譯法律資料檔
-  * `Eng_MingLing/`: 英譯命令資料檔
+  * `index.xml`: 彙整所有法規的基本資料，包含歷次更新日期與舊名。根結點保留 `UpdateDate` 屬性。
+  * `FalVMingLing/`: 中文法律與命令資料檔
+  * `Eng_FalVMingLing/`: 英譯法律與命令資料檔
   * `HisMingLing/`: 歷史命令資料檔，依各法規的 `PCODE` 再分成各子資料夾。
-* `json/`: 子目錄結構與 `xml/` 相同。
+* `json/`: 子目錄結構與 `xml/` 相同，但 `index.json` 不包含 `UpdateDate` 資訊。
 * `source/`: 從全國法規資料庫下載而來的 XML 檔，須手動放入。
 
 ## Usage & Update
@@ -37,7 +36,6 @@
 * 輸出檔縮減了 XML 的縮排，但保留了 CDATA 中換行後的縮排。
 * 保留了原始檔案中，沒有資料的標籤。
 * 已移除原始檔案中的控制字元（換行字元除外）。
-* 統整一個 `index.xml` 檔包含所有法規的基本資料，包含歷次更新日期與舊名。根結點保留 `UpdateDate` 屬性。
 
 ### JSON
 * 移除了沒有資料的屬性，但保留空白的「編章節」。（見 H0170012 「公共藝術設置辦法」）
@@ -45,4 +43,3 @@
 * 「法規內容」中，為維持「編章節」和「條文」的順序，使用 [`xml2jsobj`](https://www.npmjs.com/package/xml2jsobj) 套件。
 * 移除「編章節」標籤中的前置空白（ `xml2jsobj` 預設使用 `trim` ）。
 * 「附件」未被官方的格式規範文件提及，已將其內的「下載網址」標籤轉存為字串陣列。
-* 統整一個 `index.json` 檔包含所有法規的基本資料，包含歷次更新日期與舊名。但此檔本身沒有 `UpdateDate` 資訊。

@@ -3,15 +3,13 @@ mkdir -p xml
 mkdir -p json
 echo removing current files ...
 rm xml/UpdateDate.txt
-rm -rf xml/FalV
-rm -rf xml/Eng_FalV
-rm -rf xml/MingLing
-rm -rf xml/Eng_MingLing
+rm xml/index.xml
+rm -rf xml/FalVMingLing
+rm -rf xml/Eng_FalVMingLing
 rm -rf xml/HisMingLing
 rm json/UpdateDate.txt
-rm -rf json/FalV
-rm -rf json/Eng_FalV
-rm -rf json/MingLing
-rm -rf json/Eng_MingLing
+rm json/index.json
+rm -rf json/FalVMingLing
+rm -rf json/Eng_FalVMingLing
 rm -rf json/HisMingLing
 node main.js
