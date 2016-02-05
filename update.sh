@@ -5,6 +5,7 @@
 # 1. Maintain your `source/` as a repository with tags
 # 2. Run `./update.sh <tag>`
 #
+[ "$#" -eq 1 ] || echo "Error: require one argument" && exit 1
 echo checking out the source to $1
 cd source
 git checkout $1
