@@ -2,7 +2,7 @@
 #
 # Download zip files from moj and unzip them into `./source`.
 #
-[ "$#" -eq 1 ] || echo "Error: require specify UpdateDate" && exit 1
+[ "$#" -eq 1 ] || (echo "Error: require specify UpdateDate" && exit 1)
 mkdir -p source
 cd source
 git init
