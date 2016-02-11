@@ -18,5 +18,5 @@ unzip HisMingLing.zip
 
 rm *.zip
 git add .
-git commit "UpdateDate $1"
+git commit -m "UpdateDate $1"
 git tag $1
