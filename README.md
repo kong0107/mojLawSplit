@@ -22,6 +22,11 @@
 2. 從全國法規資料庫下載法規資料檔，解壓縮成各 XML 檔後，存於 source 目錄。
 3. 執行指令 `npm start` （如無 `bash` ，請執行 `node main.js` ），需時數分鐘。
 
+## Advanced Usage
+1. 建立 xml, json 子目錄，並均設為 git 儲存庫。
+2. 執行 `./download.sh <date>` ，其中 `<date>` 是法規資料庫更新日。
+3. 執行 `./update.sh <date>` ，其中 `<date>` 是法規資料庫更新日。
+
 ## Input Data Source
 * 未包含所有命令，大多數自治條例與自治規則均未被包含。
 * 未包含法律層級的修改紀錄。
