@@ -4,7 +4,7 @@
 本專案僅保留程式碼，實際資料檔請連向：
 * [mojLawSplitXML](https://github.com/kong0107/mojLawSplitXML)
 * [mojLawSplitJSON](https://github.com/kong0107/mojLawSplitJSON)
-* [全國法規資料庫](http://law.moj.gov.tw/PublicData/DevelopGuide.aspx)
+* [政府資料開放平台](https://data.gov.tw/datasets/search?qs=dtid:692+%E6%B3%95%E8%A6%8F)
 
 ## Files
 * `xml/`: 切成小份的 XML 檔，除了 `index.xml` 為彙整，其餘每個檔均是一個法規。
