@@ -1,9 +1,8 @@
 #!/bin/bash
 #
 # Download zip files from moj and unzip them into `./source`.
-# Usage: ./download.sh <tag>
+# Usage: ./download.sh
 #
-[ "$#" -eq 1 ] || (echo "Error: require specify UpdateDate" && exit 1)
 mkdir -p source
 cd source
 git init
@@ -20,5 +19,4 @@ unzip -o HisMingLing.zip
 rm *.zip
 rm *.csv
 git add .
-git commit -m "UpdateDate $1"
-git tag $1
+git commit -m "update source"
