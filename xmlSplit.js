@@ -32,7 +32,7 @@ const main = async () => {
         if(path.extname(src) !== '.xml') continue;
 
 		console.log(`Opening ${src}`);
-		const whole = (await fsP.readFile(`./source/${src}`, 'utf8')).replace(/\r\n/g, '\n');
+		const whole = (await fsP.readFile(`./source/${src}`, 'utf8'));
 		console.log('Parsing');
 
 		update = whole.match(/UpdateDate="(\d+)"/)[1];
@@ -43,11 +43,11 @@ const main = async () => {
 			// 每處理100個法規就輸出一個小點，讓使用者知道有在運作。
 			if(!(i % 100)) process.stdout.write('.');
 
-			const xml = '<法規>\n'
+			const xml = '<法規>\r\n'
 				+ frags[i].trim()
 					.replace(/[\x00-\x09\x0b\x0c\x0e-\x1f]/g, '') // 有時有一些奇怪的字元
-					.replace(/\n    ( *)</g, '\n$1<') // 拿掉四個半形空格縮排
-				+ '\n</法規>\n'
+					.replace(/\r\n    ( *)</g, '\r\n$1<') // 拿掉四個半形空格縮排
+				+ '\r\n</法規>\r\n'
             ;
 
 			const [, pcode, , lnndate, lser] = xml.match(/pcode=(\w+)(&lnndate=(\d+)&lser=(\d+))?/i);

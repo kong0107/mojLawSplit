@@ -21,7 +21,7 @@
 1. 安裝 Node.js 。
 2. 在目錄中執行 `npm install` 。
 2. 從全國法規資料庫下載法規資料檔，解壓縮成各 XML 檔後，存於 source 目錄。
-3. 執行指令 `npm start` （如無 `bash` ，請執行 `node main.js` ），需時數分鐘。
+3. 執行指令 `node main.js` ，等待數分鐘。
 
 ## Advanced Usage
 1. 建立 xml, json 子目錄，並均設為 git 儲存庫。
@@ -38,7 +38,7 @@
 ## Output
 
 ### XML
-* 輸出檔沒有 XML 宣告 `<?xml ... ?>` ，亦無 BOM 。
+* 輸出檔沒有 XML 宣告 `<?xml ... ?>` ，亦無 BOM ；換行字元為 `\r\n` 。
 * 輸出檔縮減了 XML 的縮排，但保留了 CDATA 中換行後的縮排。
 * 保留了原始檔案中，沒有資料的標籤。
 * 已移除原始檔案中的控制字元（換行字元除外）。
@@ -50,16 +50,23 @@
 * 移除「編章節」標籤中的前置空白（ `xml2jsobj` 預設使用 `trim` ）。
 * 「附件」未被官方的格式規範文件提及，已將其內的「下載網址」標籤轉存為字串陣列。
 
-## Changelog
-
-### 0.4.0
-2019-01-03
-* 完全重寫 `main.js` 。
-* `\r\n` 均被換為 `\n` 。
-* `index.xml` 和 `index.json` 不再包含歷次更新日期，但仍保留法規的各舊名。
-* `index.xml` 改為標籤式。原本的 `<LAW name="民法" />` 改成 `<LAW><NAME>民法</NAME></LAW>` 。
-
 ## Warning
 
 全國法規資料庫自 2019-01-01 改版後，連結格式已有變化。
-資料中許多網址均已失效，所幸都只是網址格式與變數名稱不同，因此還是有辦法找到資料。（只是還沒做）
+資料中許多網址均已失效，所幸都只是網址格式與變數名稱不同，因此還是有辦法找到資料。
+
+## Development
+
+### Files
+* `main.js`: 主程式
+* `xmlSplit.js`: 將 `source/*.xml` 切成各個小檔。可單獨執行。
+* `xml2json.js`: 將各 XML 小檔轉存成 JSON 。可單獨執行，沒有被 `main.js` 使用。
+* `saveSummary.js`: 將各 JSON 小檔摘要後存成 `json/index.json` 和 `xml/index.xml` 。可單獨執行。
+* `lib`: 函式庫
+  * `arrange.js`: 改寫法規物件結構。
+  * `loadSplit.js`: 讀取各 XML 或 JSON 小檔。沒有被 `main.js` 使用。
+  * `getFilePath.js`: 由法規資料決定檔案路徑。
+  * `mapAsync.js`: `Array.prototype.map` 的非同步版本。
+  * `mapDict.js`: 依照本程式用的物件結構，對各法規資料版本套用指定函式。
+  * `parseXML.js`: 將單一法規的 XML 字串轉為 JS 物件。
+  * `writeFile.js`: 將檔案寫入指定路徑。若路徑未存在就遞迴創建資料夾。

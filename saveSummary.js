@@ -10,7 +10,6 @@ const fsP = require('fs').promises;
 const json2xml = require('json2xml');
 const loadSplit = require('./lib/loadSplit');
 const writeFile = require('./lib/writeFile');
-//Array.prototype.forEachAsync = require('./lib/mapAsync').forEachAsync;
 
 const main = async data => {
     const dict = data || (await loadSplit('json', JSON.parse));
@@ -27,16 +26,18 @@ const main = async data => {
 
         const updates = [], oldNames = [];
         dictItem.history.forEach(hisItem => {
-            const {'異動日期': date, '法規名稱': oldName} = hisItem.data;
-            updates.push(date);
+            const oldName = hisItem.data['法規名稱'];
+            //if(!oldName) console.log(JSON.stringify(hisItem.data).substring(0, 100));
+            updates.push(hisItem.lnndate);
             if(oldName != name && !oldNames.includes(oldName)) oldNames.push(oldName);
         });
         if(updates.length) sumItem.updates = updates;
         if(oldNames.length) sumItem.oldNames = oldNames;
         return sumItem;
-    }).sort((a, b) => a.pcode - b.pcode);
+    }).sort((a, b) => (a.PCode < b.PCode) ? -1 : 1);
 
     // 寫入 JSON
+    console.log('Saving ./json/index.json');
     const summaryJSON = JSON.stringify(summary)
         .replace(/{"PCode"/g, '\n{"PCode"')
         .slice(0, -1).concat('\n]\n')
@@ -44,6 +45,7 @@ const main = async data => {
     await writeFile('./json/index.json', summaryJSON);
 
     // 轉成 XML ，但要先弄成 json2xml 的格式
+    console.log('Saving ./xml/index.xml');
     const update = await fsP.readFile('./xml/UpdateDate.txt', 'utf8');
     const obj4xml = summary.map(sumItem => {
         const children = [];
