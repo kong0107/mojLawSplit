@@ -15,10 +15,10 @@ const getFilePath = require('./lib/getFilePath');
 
 /**
  * 把切好的 XML 轉存成 JSON ，並用 Promise 回傳所有 JSON
- * @param {*} [data] xmlSplit 傳過來的資料。如果沒有的話就會抓 ./xml 資料夾裡的東西
+ * @param {*} [dict] xmlSplit 傳過來的資料。如果沒有的話就會抓 ./xml 資料夾裡的東西
  */
-const main = async data => {
-	const dict = data || (await loadSplit('xml'));
+const main = async dict => {
+	if(!dict) dict = await loadSplit('xml');
 	await fsP.copyFile('./xml/UpdateDate.txt', './json/UpdateDate.txt');
 
 	console.log('Converting XML to JSON');
