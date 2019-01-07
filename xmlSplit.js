@@ -25,9 +25,8 @@ const writeFile = require('./lib/writeFile');
  * }]
  */
 const main = async () => {
-	let update;
     const dict = [];
-    const files = await fsP.readdir('./source');
+    const files = ['FalVMingLing.xml', 'Eng_FalVMingLing.xml'];//await fsP.readdir('./source');
 	for(let src of files) {
         if(path.extname(src) !== '.xml') continue;
 
@@ -35,8 +34,9 @@ const main = async () => {
 		const whole = (await fsP.readFile(`./source/${src}`, 'utf8'));
 		console.log('Parsing');
 
-		update = whole.match(/UpdateDate="(\d+)"/)[1];
-		await writeFile('./xml/UpdateDate.txt', update);
+		// 讀取日期。格式有換過，所以寫成新舊版都通用。
+		const [, year, month, date] = whole.match(/UpdateDate="(\d{4})\/?(\d{2})\/?(\d{2})/);
+		await writeFile('./xml/UpdateDate.txt', ''.concat(year, month, date));
 
 		const frags = whole.split(/<\/?法規>/).filter((f, i) => i % 2);
 		for(let i = 0; i < frags.length; ++i) {
