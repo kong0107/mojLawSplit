@@ -19,7 +19,6 @@ const main = async dict => {
 
 	console.log('Arranging JS object');
 	dict = await mapDict(async (law, pcode, category, lnndate, lser) => {
-		console.log(pcode);
 		const result = await arrange(law, pcode, category);
 		const filepath = './json_arrange/' + getFilePath(pcode, category, lnndate, lser) + '.json';
 		await writeFile(filepath, JSON.stringify(result, null, '\t'));
