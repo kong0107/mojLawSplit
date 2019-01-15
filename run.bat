@@ -1,6 +1,6 @@
 cd source
 git add .
-git commit -m "UpdateDate 20181221"
+git commit -m "UpdateDate 20181228"
 cd ..
 
 del xml\UpdateDate.txt
@@ -17,18 +17,26 @@ rem rmdir /s /q json\HisMingLing
 
 node main.js
 
-cd json
+cd xml
 git add .
-git commit -m "UpdateDate 20181221"
-git tag 20181221
+git commit -m "UpdateDate 20181228"
+git tag 20181228
 git push
 git push --tags
 cd ..
 
-cd xml
+cd json
 git add .
-git commit -m "UpdateDate 20181221"
-git tag 20181221
+git commit -m "UpdateDate 20181228"
+git tag 20181228
+git push
+git push --tags
+cd ..
+
+cd json_arrange
+git add .
+git commit -m "UpdateDate 20181228"
+git tag 20181228
 git push
 git push --tags
 cd ..

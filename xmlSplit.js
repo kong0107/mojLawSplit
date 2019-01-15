@@ -26,7 +26,8 @@ const writeFile = require('./lib/writeFile');
  */
 const main = async () => {
     const dict = [];
-    const files = ['FalVMingLing.xml', 'Eng_FalVMingLing.xml'];//await fsP.readdir('./source');
+	//const files = await fsP.readdir('./source'); // 歷史法規看來已不再更新了
+	const files = ['FalVMingLing.xml', 'Eng_FalVMingLing.xml'];
 	for(let src of files) {
         if(path.extname(src) !== '.xml') continue;
 

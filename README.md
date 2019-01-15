@@ -14,7 +14,7 @@
   * `Eng_FalVMingLing/`: 英譯法律與命令資料檔
   * `HisMingLing/`: 歷史命令資料檔，依各法規的 `PCODE` 再分成各子資料夾。
 * `json/`: 子目錄結構與 `xml/` 相同，但 `index.json` 不包含 `UpdateDate` 資訊。
-* `json_arranged/`: 將法規資料重整後再存而成的 JSON 。
+* `json_arrange/`: 將法規資料重整後再存而成的 JSON 。
 * `source/`: 從全國法規資料庫下載而來的 XML 檔，須手動放入。
 
 ## Usage & Update
