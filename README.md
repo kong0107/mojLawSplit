@@ -7,6 +7,8 @@
 * [政府資料開放平台](https://data.gov.tw/datasets/search?qs=dtid:692+%E6%B3%95%E8%A6%8F)
 
 ## Files
+
+### Data
 * `xml/`: 切成小份的 XML 檔，除了 `index.xml` 為彙整，其餘每個檔均是一個法規。
   * `UpdateDate.txt`: 法規更新日期
   * `index.xml`: 彙整所有法規的基本資料，包含歷次舊名。根結點保留 `UpdateDate` 屬性。
@@ -16,6 +18,21 @@
 * `json/`: 子目錄結構與 `xml/` 相同，但 `index.json` 不包含 `UpdateDate` 資訊。
 * `json_arrange/`: 將法規資料重整後再存而成的 JSON 。
 * `source/`: 從全國法規資料庫下載而來的 XML 檔，須手動放入。
+
+### Codes
+* `main.js`: 主程式
+* `xmlSplit.js`: 將 `source/*.xml` 切成各個小檔。可單獨執行。
+* `xml2json.js`: 將各 XML 小檔轉存成 JSON 。可單獨執行，沒有被 `main.js` 使用。
+* `saveSummary.js`: 將各 JSON 小檔摘要後存成 `json/index.json` 和 `xml/index.xml` 。可單獨執行。
+* `merge.js`: 將各 JSON 小檔結合成大檔，即 `./source/*.xml` 的 JSON 版本。 `main.js` 不會執行這個動作。（另注意 GitHub 於單檔超過 50MB 會給警告，單檔超過 100MB 時會給錯誤）
+* `lib`: 函式庫
+  * `arrange.js`: 改寫法規物件結構。
+  * `loadSplit.js`: 讀取各 XML 或 JSON 小檔。沒有被 `main.js` 使用。
+  * `getFilePath.js`: 由法規資料決定檔案路徑。
+  * `mapAsync.js`: `Array.prototype.map` 的非同步版本。
+  * `mapDict.js`: 依照本程式用的物件結構，對各法規資料版本套用指定函式。
+  * `parseXML.js`: 將單一法規的 XML 字串轉為 JS 物件。
+  * `writeFile.js`: 將檔案寫入指定路徑。若路徑未存在就遞迴創建資料夾。
 
 ## Usage & Update
 1. 安裝 Node.js 。
@@ -36,7 +53,6 @@
 * 偶爾會出現控制字元。
 
 ## Output
-
 會創建三個子資料夾
 
 ### xml
@@ -60,23 +76,6 @@
 * 「編章節」存為巢狀。
 
 ## Warning
-
 全國法規資料庫自 2019-01-01 改版後，
 * 資料內的連結格式已有變化。
-* 歷史法規似乎不再更新。
-
-## Development
-
-### Files
-* `main.js`: 主程式
-* `xmlSplit.js`: 將 `source/*.xml` 切成各個小檔。可單獨執行。
-* `xml2json.js`: 將各 XML 小檔轉存成 JSON 。可單獨執行，沒有被 `main.js` 使用。
-* `saveSummary.js`: 將各 JSON 小檔摘要後存成 `json/index.json` 和 `xml/index.xml` 。可單獨執行。
-* `lib`: 函式庫
-  * `arrange.js`: 改寫法規物件結構。
-  * `loadSplit.js`: 讀取各 XML 或 JSON 小檔。沒有被 `main.js` 使用。
-  * `getFilePath.js`: 由法規資料決定檔案路徑。
-  * `mapAsync.js`: `Array.prototype.map` 的非同步版本。
-  * `mapDict.js`: 依照本程式用的物件結構，對各法規資料版本套用指定函式。
-  * `parseXML.js`: 將單一法規的 XML 字串轉為 JS 物件。
-  * `writeFile.js`: 將檔案寫入指定路徑。若路徑未存在就遞迴創建資料夾。
+* 歷史法規似乎不再更新，預設將不再處理（於 `xmlSplit.js` 中設定）。
