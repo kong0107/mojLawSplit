@@ -29,5 +29,4 @@ Promise.resolve().then(async () => {
 	console.log('All XML converted.');
 
 	await saveSummary(dict);
-	await fsP.copyFile('./json/index.json', './json_arrange/index.json');
 });

@@ -15,7 +15,11 @@ const main = async dict => {
         if(reason.code !== 'EEXIST') throw new Error('Failed to create directory');
     });
 	await fsP.copyFile('./json/UpdateDate.txt', './json_arrange/UpdateDate.txt');
-    await fsP.copyFile('./json/index.json', './json_arrange/index.json');
+	//await fsP.copyFile('./json/index.json', './json_arrange/index.json');
+	await writeFile(
+		'./json_arrange/index.json',
+		(await fsP.readFile('./json/index.json', 'utf8')).replace(/{"PCode"/g, '{"pcode"')
+	);
 
 	console.log('Arranging JS object');
 	dict = await mapDict(async (law, pcode, category, lnndate, lser) => {

@@ -4,7 +4,17 @@
 本專案僅保留程式碼，實際資料檔請連向：
 * [mojLawSplitXML](https://github.com/kong0107/mojLawSplitXML)
 * [mojLawSplitJSON](https://github.com/kong0107/mojLawSplitJSON)
+* [mojLawSplitJSON 重整版](https://github.com/kong0107/mojLawSplitJSON/tree/arranged)
 * [政府資料開放平台](https://data.gov.tw/datasets/search?qs=dtid:692+%E6%B3%95%E8%A6%8F)
+
+
+## Warning
+2019 年起，因應全國法規資料庫的變化，將不再處理歷史法規。
+
+## Abstract
+* 全國法規資料庫並沒有「所有」的法規。許多行政規則、自治條例、自治規則都不在裡面。
+* 2018 以前的資料會有「歷史法規」，但也僅有行政命令層級的資料。法律層級的歷史演變要找立法院資料。
+* 英譯法規的更新日期，不一定會跟中文版的一樣。
 
 ## Files
 
@@ -15,6 +25,7 @@
   * `FalVMingLing/`: 中文法律與命令資料檔
   * `Eng_FalVMingLing/`: 英譯法律與命令資料檔
   * `HisMingLing/`: 歷史命令資料檔，依各法規的 `PCODE` 再分成各子資料夾。
+    此部分資料因 2019 以後不再更新，故也不再繼續處理（但保留程式碼）。
 * `json/`: 子目錄結構與 `xml/` 相同，但 `index.json` 不包含 `UpdateDate` 資訊。
 * `json_arrange/`: 將法規資料重整後再存而成的 JSON 。
 * `source/`: 從全國法規資料庫下載而來的 XML 檔，須手動放入。
@@ -22,8 +33,9 @@
 ### Codes
 * `main.js`: 主程式
 * `xmlSplit.js`: 將 `source/*.xml` 切成各個小檔。可單獨執行。
-* `xml2json.js`: 將各 XML 小檔轉存成 JSON 。可單獨執行，沒有被 `main.js` 使用。
 * `saveSummary.js`: 將各 JSON 小檔摘要後存成 `json/index.json` 和 `xml/index.xml` 。可單獨執行。
+* `xml2json.js`: 將各 XML 小檔轉存成 JSON 。可單獨執行。沒有被 `main.js` 使用。
+* `arrangeAll.js`: 把 `json/` 裡頭的經過 `arrange` 後存到 `json_arrange/` 。沒有被 `main.js` 使用。
 * `merge.js`: 將各 JSON 小檔結合成大檔，即 `./source/*.xml` 的 JSON 版本。 `main.js` 不會執行這個動作。（另注意 GitHub 於單檔超過 50MB 會給警告，單檔超過 100MB 時會給錯誤）
 * `lib`: 函式庫
   * `arrange.js`: 改寫法規物件結構。
@@ -62,6 +74,7 @@
 * 已移除原始檔案中的控制字元（換行字元除外）。
 
 ### json
+* 法規編號欄位叫做 `PCode` （不是 `pcode` ）——因為 2019 以前全國法規資料庫的變數名稱不一致。
 * 移除了沒有資料的屬性，但保留空白的「編章節」。（見 H0170012 「公共藝術設置辦法」）
 * 除了「法規內容」和「附件」外，各標籤均轉存為物件的字串成員。
 * 「法規內容」中，為維持「編章節」和「條文」的順序，使用 [`xml2jsobj`](https://www.npmjs.com/package/xml2jsobj) 套件。
@@ -69,13 +82,10 @@
 * 「附件」未被官方的格式規範文件提及，已將其內的「下載網址」標籤轉存為字串陣列。
 
 ### json_arrange
+* 警告：格式未定！
+* 法規編號欄位叫做 `pcode` （不是 `PCode` ）——因為 2019 以後全國法規資料庫的變數名稱統一了。
 * 整理過後的 JSON 檔，解析並變更「沿革內容」與「法規內容」的結構
 * 欄位名稱均改為英文
 * 將「編章節」與「條文」分開儲存，不再混在一起。
 * 章節編號與條號仿照立法院的方式，「第十五條之一」將存為 `1501` 。
 * 「編章節」存為巢狀。
-
-## Warning
-全國法規資料庫自 2019-01-01 改版後，
-* 資料內的連結格式已有變化。
-* 歷史法規似乎不再更新，預設將不再處理（於 `xmlSplit.js` 中設定）。

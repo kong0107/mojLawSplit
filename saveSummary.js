@@ -44,6 +44,9 @@ const main = async data => {
     ;
     await writeFile('./json/index.json', summaryJSON);
 
+    // json/index.json 有歷史因素，所以維持 `PCode` ，但新版的 json_arrange 則統一用 `pcode` 。
+    await writeFile('./json_arrange/index.json', summaryJSON.replace(/{"PCode"/g, '{"pcode"'));
+
     // 轉成 XML ，但要先弄成 json2xml 的格式
     console.log('Saving ./xml/index.xml');
     const update = await fsP.readFile('./xml/UpdateDate.txt', 'utf8');

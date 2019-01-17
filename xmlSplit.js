@@ -32,11 +32,13 @@ const main = async () => {
         if(path.extname(src) !== '.xml') continue;
 
 		console.log(`Opening ${src}`);
-		const whole = (await fsP.readFile(`./source/${src}`, 'utf8'));
+		const whole = await fsP.readFile(`./source/${src}`, 'utf8');
 		console.log('Parsing');
 
 		// 讀取日期。格式有換過，所以寫成新舊版都通用。
-		const [, year, month, date] = whole.match(/UpdateDate="(\d{4})\/?(\d{2})\/?(\d{2})/);
+		let [, year, month, date] = whole.match(/UpdateDate="(\d{4})\/?(\d{1,2})\/?(\d{1,2})/);
+		if(month.length === 1) month = '0'.concat(month);
+		if(date.length === 1) date = '0'.concat(date);
 		await writeFile('./xml/UpdateDate.txt', ''.concat(year, month, date));
 
 		const frags = whole.split(/<\/?法規>/).filter((f, i) => i % 2);
