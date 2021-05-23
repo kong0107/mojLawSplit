@@ -5,7 +5,7 @@
 * [mojLawSplitXML](https://github.com/kong0107/mojLawSplitXML)
 * [mojLawSplitJSON](https://github.com/kong0107/mojLawSplitJSON)
 * [mojLawSplitJSON 重整版](https://github.com/kong0107/mojLawSplitJSON/tree/arranged)
-* [政府資料開放平台](https://data.gov.tw/datasets/search?qs=dtid:692+%E6%B3%95%E8%A6%8F)
+* [政府資料開放平台](https://data.gov.tw/datasets/search?query=%E6%B3%95%E8%A6%8F)
 
 
 ## Warning

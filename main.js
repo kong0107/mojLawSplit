@@ -10,8 +10,16 @@ const arrange = require('./lib/arrange');
 
 Promise.resolve().then(async () => {
 	let dict = await xmlSplit();
-	await fsP.copyFile('./xml/UpdateDate.txt', './json/UpdateDate.txt');
-	await fsP.copyFile('./xml/UpdateDate.txt', './json_arrange/UpdateDate.txt');
+
+	try {
+		await fsP.mkdir('./json');
+	} catch(err){}
+	fsP.copyFile('./xml/UpdateDate.txt', './json/UpdateDate.txt');
+
+	try {
+		await fsP.mkdir('./json_arrange');
+	} catch(err){}
+	fsP.copyFile('./xml/UpdateDate.txt', './json_arrange/UpdateDate.txt');
 
 	console.log('Converting XML to JSON');
 	dict = await mapDict(async (xml, pcode, category, lnndate, lser) => {
