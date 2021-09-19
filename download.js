@@ -36,4 +36,5 @@ async function main() {
     await fsP.unlink('./source/manifest.csv');
 }
 
-main();
+if(module && module.parent) module.exports = main;
+else main();

@@ -8,7 +8,7 @@ const getFilePath = require('./lib/getFilePath');
 const writeFile = require('./lib/writeFile');
 const arrange = require('./lib/arrange');
 
-Promise.resolve().then(async () => {
+(async () => {
 	let dict = await xmlSplit();
 
 	try {
@@ -37,4 +37,4 @@ Promise.resolve().then(async () => {
 	console.log('All XML converted.');
 
 	await saveSummary(dict);
-});
+})();
