@@ -42,13 +42,23 @@ async function main() {
     }
     catch(e) {}
 
+    let runBat = await fsP.readFile('./run.bat', 'utf8');
     if(newDate > oldDate) {
         await downloadAndUnzip(
             'https://sendlaw.moj.gov.tw/PublicData/GetFile.ashx?DType=XML&AuData=CFM',
             __dirname + '/source/'
         );
+
+        runBat = runBat.replace(/\d{8}/g, newDate).replace(/^exit\r?\n?\r?/, '');
+        await fsP.writeFile('./run.bat', runBat, 'utf8');
     }
-    else process.stdout.write('data not updated yet\n');
+    else {
+        if(!runBat.startsWith('exit')) {
+            runBat = "exit\n" + runBat;
+            await fsP.writeFile('./run.bat', runBat, 'utf8');
+        }
+        process.stdout.write('data not updated yet\n');
+    }
 
     fsP.unlink('./source/schema.csv');
     fsP.unlink('./source/manifest.csv');

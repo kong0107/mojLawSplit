@@ -1,9 +1,9 @@
-echo off
+@echo off
 
 echo Check source
 cd source
 git add .
-git commit -m "UpdateDate 20210903"
+git commit -m "UpdateDate 20220715"
 cd ..
 
 echo Delete old data
@@ -29,8 +29,8 @@ node main.js
 echo Upload split XML
 cd xml
 git add .
-git commit -m "UpdateDate 20210903"
-git tag 20210903
+git commit -m "UpdateDate 20220715"
+git tag 20220715
 git push
 git push --tags
 cd ..
@@ -38,8 +38,8 @@ cd ..
 echo Upload converted JSON
 cd json
 git add .
-git commit -m "UpdateDate 20210903"
-git tag 20210903
+git commit -m "UpdateDate 20220715"
+git tag 20220715
 git push
 git push --tags
 cd ..
@@ -47,8 +47,8 @@ cd ..
 echo Upload arranged JSON
 cd json_arrange
 git add .
-git commit -m "UpdateDate 20210903"
-git tag 20210903_arrange
+git commit -m "UpdateDate 20220715"
+git tag 20220715_arrange
 git push
 git push --tags
 cd ..
