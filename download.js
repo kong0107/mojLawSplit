@@ -8,10 +8,11 @@ async function downloadAndUnzip(url, absPath) {
         const extractor = unzipper.Extract({path: absPath});
         extractor.on('close', resolve);
 
-        let counter = 0;
         const request = https.get(url, res => {
             if(res.statusCode != 200) reject(res.statusMessage);
             process.stdout.write('File downloading');
+
+            let counter = 0;
             res.on('data', () => {
                 if(++counter % 512 === 0) process.stdout.write('.');
             });

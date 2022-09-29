@@ -13,8 +13,8 @@ unzip -o FalVMingLing.zip
 curl -L -o Eng_FalVMingLing.zip "https://sendlaw.moj.gov.tw/PublicData/GetFile.ashx?DType=XML&AuData=EFM"
 unzip -o Eng_FalVMingLing.zip
 
-curl -L -o HisMingLing.zip "https://sendlaw.moj.gov.tw/PublicData/GetFile.ashx?DType=XML&AuData=CHM"
-unzip -o HisMingLing.zip
+# curl -L -o HisMingLing.zip "https://sendlaw.moj.gov.tw/PublicData/GetFile.ashx?DType=XML&AuData=CHM"
+# unzip -o HisMingLing.zip
 
 rm *.zip
 rm *.csv

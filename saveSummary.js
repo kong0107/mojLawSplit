@@ -38,14 +38,21 @@ const main = async data => {
 
     // 寫入 JSON
     console.log('Saving ./json/index.json');
-    const summaryJSON = JSON.stringify(summary)
-        .replace(/{"PCode"/g, '\n{"PCode"')
+    let summaryJSON = JSON.stringify(summary)
+        .replaceAll('{"PCode"', '\n{"PCode"')
         .slice(0, -1).concat('\n]\n')
     ;
     await writeFile('./json/index.json', summaryJSON);
 
-    // json/index.json 有歷史因素，所以維持 `PCode` ，但新版的 json_arrange 則統一用 `pcode` 。
-    await writeFile('./json_arrange/index.json', summaryJSON.replace(/{"PCode"/g, '{"pcode"'));
+    /**
+     * json/index.json 有歷史因素，所以維持 `PCode` ，但新版的 json_arrange 則統一用 `pcode` 。
+     * 略過各「編制表」、「編組表」。
+     */
+    summaryJSON = JSON.stringify(summary.filter(r => !r.name.endsWith("表")))
+        .replaceAll('{"PCode"', '\n{"pcode"')
+        .slice(0, -1).concat('\n]\n')
+    ;
+    await writeFile('./json_arrange/index.json', summaryJSON);
 
     // 轉成 XML ，但要先弄成 json2xml 的格式
     console.log('Saving ./xml/index.xml');

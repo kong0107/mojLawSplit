@@ -9,6 +9,10 @@
 const fsP = require('fs').promises;
 const path = require('path');
 const writeFile = require('./lib/writeFile');
+// const statistics = {
+// 	法: 0, 律: 0, 條例: 0, 通則: 0,
+// 	規程: 0, 規則: 0, 細則: 0, 辦法: 0, 綱要: 0, 標準: 0, 準則: 0
+// };
 
 /**
  * 回傳會被解決為
@@ -53,6 +57,7 @@ const main = async () => {
 				+ '\r\n</法規>\r\n'
             ;
 
+			// const name = xml.match(/<法規名稱>([^（]*)(（.*）)?<\/法規名稱>/)?.[1];
 			const [, pcode, , lnndate, lser] = xml.match(/pcode=(\w+)(&lnndate=(\d+)&lser=(\d+))?/i);
             let filepath = path.join('./xml', path.basename(src, '.xml'), pcode);
             if(lnndate) filepath += `/${lnndate}_${lser}`;
