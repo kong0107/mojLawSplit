@@ -1,11 +1,5 @@
 @echo off
 
-echo Check source
-cd source
-git add .
-git commit -m "UpdateDate 20220916"
-cd ..
-
 echo Delete old data
 
 del xml\UpdateDate.txt
@@ -18,10 +12,10 @@ del json\index.json
 rmdir /s /q json\FalVMingLing
 rmdir /s /q json\Eng_FalVMingLing
 
-del json_arrange\UpdateDate.txt
-del json_arrange\index.json
-rmdir /s /q json_arrange\FalVMingLing
-rmdir /s /q json_arrange\Eng_FalVMingLing
+@REM del json_arrange\UpdateDate.txt
+@REM del json_arrange\index.json
+@REM rmdir /s /q json_arrange\ch
+@REM rmdir /s /q json_arrange\en
 
 echo Execute main
 node main.js
@@ -44,14 +38,14 @@ git push
 git push --tags
 cd ..
 
-echo Upload arranged JSON
-cd json_arrange
-git add .
-git commit -m "UpdateDate 20220916"
-git tag 20220916_arrange
-git push
-git push --tags
-cd ..
+@REM echo Upload arranged JSON
+@REM cd json_arrange
+@REM git add .
+@REM git commit -m "UpdateDate 20220916"
+@REM git tag 20220916_arrange
+@REM git push
+@REM git push --tags
+@REM cd ..
 
 echo Done!
 pause
