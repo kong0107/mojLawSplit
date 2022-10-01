@@ -1,34 +1,20 @@
 @echo off
 
-node main.js
-
-echo Upload split XML
-cd xml
+cd json_split
 git add .
-git commit -m "UpdateDate 20220916"
-git tag 20220916
+git commit -m "UpdateDate 20220923"
+git tag 20220923_swagger
 git push
 git push --tags
 cd ..
 
-echo Upload converted JSON
-cd json
+cd json_arrange
 git add .
-git commit -m "UpdateDate 20220916"
-git tag 20220916
+git commit -m "UpdateDate 20220923"
+git tag 20220923_arrange
 git push
 git push --tags
 cd ..
 
-@REM echo Upload arranged JSON
-@REM cd json_arrange
-@REM git add .
-@REM git commit -m "UpdateDate 20220916"
-@REM git tag 20220916_arrange
-@REM git push
-@REM git push --tags
-@REM cd ..
-
-echo Done!
 pause
-echo on
+@echo on
