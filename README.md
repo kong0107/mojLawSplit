@@ -11,6 +11,10 @@
 * [政府資料開放平台](https://data.gov.tw/datasets/search?query=%E6%B3%95%E8%A6%8F) （官方舊版 XML ）
 * [全國法規資料庫Open API](https://law.moj.gov.tw/api/swagger/ui/index) （官方新版 API ）
 
+### 新版 (swagger)
+* 有 XML 也有 JSON ，但仍然是一個 ZIP 檔裡面把所有法律／命令放在一個檔案裡。
+* 鍵名把 attachment 拼錯了。
+
 
 ## Warning
 * 不會處理各「編制表」及「編組表」。
