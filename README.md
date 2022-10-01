@@ -3,7 +3,8 @@
 
 本專案僅保留程式碼，實際資料檔請連向：
 * [mojLawSplitXML](https://github.com/kong0107/mojLawSplitXML) （從舊版 XML 切出來）
-* [mojLawSplitJSON](https://github.com/kong0107/mojLawSplitJSON) （從舊版 XML 切出來後轉換）
+* [mojLawSplitJSON 舊版](https://github.com/kong0107/mojLawSplitJSON) （從舊版 XML 切出來後轉換為 JSON）
+* [mojLawSplitJSON 純切版](https://github.com/kong0107/mojLawSplitJSON/tree/arranged) （從新版 JSON 切出來）
 * [mojLawSplitJSON 重整版](https://github.com/kong0107/mojLawSplitJSON/tree/arranged) （從新版 JSON 切出來後轉換）
 
 
@@ -17,39 +18,17 @@
 
 
 ## Warning
-* 不會處理各「編制表」及「編組表」。
 * 全國法規資料庫並沒有「所有」的法規。許多行政規則、自治條例、自治規則都不在裡面。
 * 舊版法規（大多為以廢止的）會使用換行來排版。
-* 2018 以前的資料會有「歷史法規」，但僅有行政命令層級的資料。法律層級的歷史演變要另外從立法院抓（本專案不處理）。
+* 2018 以前有「歷史法規」，但亦僅有行政命令層級的資料。法律層級的歷史演變要另外從立法院抓。（本專案均不處理）
 * 英譯法規的更新日期，不一定會跟中文版的一樣。
 
 
 ## Files
-
-### Data
-* `xml/`: 切成小份的 XML 檔，除了 `index.xml` 為彙整，其餘每個檔均是一個法規。
-  * `UpdateDate.txt`: 法規更新日期
-  * `index.xml`: 彙整所有法規的基本資料，包含歷次舊名。根結點保留 `UpdateDate` 屬性。
-  * `FalVMingLing/`: 中文法律與命令資料檔
-  * `Eng_FalVMingLing/`: 英譯法律與命令資料檔
-* `json/`: 由 `xml/` 逐一轉為對應 JSON 格式的檔案，但 `index.json` 不包含 `UpdateDate` 資訊。
-* `json_arrange/`: 從[官方新版 API](https://law.moj.gov.tw/api/swagger/ui/index) 下載、切分後再處理後的 JSON 。
-  鍵名格式為 UpperCamelCase 的是與資料源相同的；鍵名格式為 lowerCamelCase 的則是本專案再處理過的。
-* `source/`: 從全國法規資料庫下載而來的原始檔。
-
-### Codes
 * `main.js`: 主程式
-* `xmlSplit.js`: 將 `source/*.xml` 切成各個小檔。可單獨執行。
-* `saveSummary.js`: 將各 JSON 小檔摘要後存成 `json/index.json` 和 `xml/index.xml` 。可單獨執行。
-* `xml2json.js`: 將各 XML 小檔轉存成 JSON 。可單獨執行。沒有被 `main.js` 使用。
-* `arrangeAll.js`: 把 `json/` 裡頭的經過 `arrange` 後存到 `json_arrange/` 。沒有被 `main.js` 使用。
 * `lib`: 函式庫
   * `arrange.js`: 改寫法規物件結構。
-  * `loadSplit.js`: 讀取各 XML 或 JSON 小檔。沒有被 `main.js` 使用。
-  * `getFilePath.js`: 由法規資料決定檔案路徑。
-  * `mapDict.js`: 依照本程式用的物件結構，對各法規資料版本套用指定函式。
   * `parseXML.js`: 將單一法規的 XML 字串轉為 JS 物件。
-  * `writeFile.js`: 將檔案寫入指定路徑。若路徑未存在就遞迴創建資料夾。
 
 
 ## Usage & Update
@@ -60,7 +39,7 @@
 
 
 ## Output
-會創建三個子資料夾
+會創建四個子資料夾
 
 ### xml
 * 輸出檔沒有 XML 宣告 `<?xml ... ?>` ，亦無 BOM ；換行字元為 `\r\n` 。
@@ -69,21 +48,30 @@
 * 已移除原始檔案中的控制字元（換行字元除外）。
 
 ### json
-* 法規編號欄位叫做 `PCode` （不是 `pcode` ）——因為 2019 以前全國法規資料庫的變數名稱不一致。
+* branch name: `gh-pages`
+* 從舊版 XML 檔切開後轉換而成。
+* 法規編號欄位是 `PCode` （不是 `pcode` ）。
 * 移除了沒有資料的屬性，但保留空白的「編章節」。（見 H0170012 「公共藝術設置辦法」）
 * 除了「法規內容」和「附件」外，各標籤均轉存為物件的字串成員。
 * 「法規內容」中，為維持「編章節」和「條文」的順序，使用 [`xml2jsobj`](https://www.npmjs.com/package/xml2jsobj) 套件。
 * 移除「編章節」標籤中的前置空白（ `xml2jsobj` 預設使用 `trim` ）。
 * 「附件」未被官方的格式規範文件提及，已將其內的「下載網址」標籤轉存為字串陣列。
 
+### json_split
+* branch name: `split`
+* 從新版 Swagger API 下載的 JSON 切開而成，無 BOM 。
+* 資料夾僅區分語言，不區分法律與命令。
+* `index.json` 放於各語系資料夾內。
+
 ### json_arrange
-* **警告**：格式未定！
-* `index.json` 「不」收錄各「編制表」和「編組表」。（但各表的法規 JSON 檔仍會存在）
-* 法規編號欄位叫做 `pcode` （不是 `PCode` ）——因為 2019 以後全國法規資料庫的變數名稱統一了。
-* 整理過後的 JSON 檔，解析並變更「沿革內容」與「法規內容」的結構。
-* 將「編章節」與「條文」分開儲存，不再混在一起。
-* 章節編號與條號仿照立法院的方式，「第十五條之一」將存為 `1501` 。
-* 「編章節」存為巢狀。
+* branch name: `arranged`
+* **警告**：格式未定，詳參 `lib/arrange.js` 。
+* 從新版 Swagger API 下載的 JSON 切開後逐一處理而成。
+* `index.json` 放於各語系資料夾內，且 「不」收錄各「編制表」和「編組表」。（但各表的法規 JSON 檔仍會存在）
+* 法規編號欄位是 `pcode` （不是 `PCode` ）。
+* 將「編章節」與「條文」分開儲存，不混在一起。
+  * 章節編號與條號仿照立法院的方式，「第十五條之一」存為 `1501` 。
+  * 「編章節」存為巢狀。
 
 
 ## 各類法規名稱數量統計 （2022-09-12）

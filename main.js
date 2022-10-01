@@ -1,49 +1,84 @@
 'use strict';
 const fsP = require('fs').promises;
-const xmlSplit = require('./xmlSplit');
-const saveSummary = require('./saveSummary');
-const mapDict = require('./lib/mapDict');
 const parseXML = require('./lib/parseXML');
-const getFilePath = require('./lib/getFilePath');
-const writeFile = require('./lib/writeFile');
 const arrange = require('./lib/arrange');
-
-const mkdir = async (path) => {
-	try {
-		await fsP.mkdir(path);
-	} catch(err) {}
-}
+const mkdir = path => fsP.mkdir(path, {recursive: true});
 
 (async () => {
-	let dict;
+	let UpdateDate, dict = [];
+	console.time("mojLawSplit");
+
+	console.log("Deleting old files");
+	for(let folder of [
+		"xml/FalVMingLing", "xml/Eng_FalVMingLing",
+		"json/FalVMingLing", "json/Eng_FalVMingLing",
+		"json_split/ch", "json_split/en",
+		"json_arrange/ch", "json_arrange/en"
+	]) await fsP.rm(`./${folder}`, {force: true, recursive: true});
+	console.timeLog("mojLawSplit");
 
 	/**
 	 * Old XML
 	 */
-	dict = await xmlSplit();
-	await mkdir("./json");
-	fsP.copyFile('./xml/UpdateDate.txt', './json/UpdateDate.txt');
+	for(let source of ["FalVMingLing", "Eng_FalVMingLing"]) {
+		await mkdir(`./xml/${source}`);
+		await mkdir(`./json/${source}`);
 
-	console.log('Converting XML to JSON');
-	dict = await mapDict(async (xml, pcode, category, lnndate, lser) => {
-		const law = await parseXML(xml);
-		const filepath = getFilePath(pcode, category, lnndate, lser) + '.json';
-		await writeFile(`./json/${filepath}`, JSON.stringify(law, null, '\t'));
-		return law;
-	}, dict);
-	console.log('All XML converted.');
-	await saveSummary(dict);
+		console.log(`Opening ${source}.xml`);
+		const xml = (await fsP.readFile(`./source/${source}.xml`, 'utf8')).trim();
+		if(!UpdateDate) {
+			let [, year, month, date] = xml.match(/\sUpdateDate="(\d{4})\/(\d{1,2})\/(\d{1,2}) /);
+			UpdateDate = year + (month.length > 1 ? month : ("0" + month)) + (date.length > 1 ? date : ("0" + date));
+			console.log("UpdateDate " + UpdateDate);
+			await fsP.writeFile("./xml/UpdateDate.txt", UpdateDate);
+		}
 
+		process.stdout.write('Parsing');
+		const laws = xml.split(/<\/?法規>/).filter((x, i) => i % 2);
+		for(let i = 0; i < laws.length; ++i) {
+			const law = "<法規>"
+				+ laws[i].replace(/\r\n    ( *)</g, '\r\n$1<').trimEnd()
+				+ "\r\n</法規>\r\n"
+			;
+			const [, pcode] = law.match(/\?pcode=([A-Z]\d{7})/);
+			await fsP.writeFile(`./xml/${source}/${pcode}.xml`, law);
+
+			const obj = await parseXML(law);
+			await fsP.writeFile(`./json/${source}/${pcode}.json`, JSON.stringify(obj, null, "\t"));
+
+			if(source === "FalVMingLing") {
+				const brief = {
+					PCode: pcode,
+					name: obj["法規名稱"],
+					lastUpdate: obj["最新異動日期"]
+				};
+				if(obj["英文法規名稱"]) brief.english = obj["英文法規名稱"];
+				dict.push(brief);
+			}
+			if(!(i % 50)) process.stdout.write(".");
+		}
+		process.stdout.write("\n");
+	}
+	await fsP.writeFile("./json/index.json", "[\n" + dict.map(law => JSON.stringify(law)).join(",\n") + "\n]\n");
+	await fsP.writeFile("./xml/index.xml",
+		`<LAWS UpdateDate="${UpdateDate}">\n`
+		+ dict.map(law => {
+			let xml = `<LAW PCode="${law.PCode}" name="${law.name}" lastUpdate="${law.lastUpdate}"`;
+			if(law.english) xml += ` english="${law.english}"`;
+			return xml + "/>";
+		}).join("\n")
+		+ "\n</LAWS>\n"
+	);
+
+	console.timeLog("mojLawSplit");
 
 	/**
 	 * New JSON
 	 */
-	for(let folder of [
-		"split", "split/ch", "split/en",
-		"arrange", "arrange/ch", "arrange/en"
-	]) await mkdir(`./json_${folder}`);
+	for(let folder of ["split/ch", "split/en", "arrange/ch", "arrange/en"])
+		await mkdir(`./json_${folder}`);
 
-	let UpdateDate;
+	UpdateDate = null;
 	dict = {ch: {}, en: {}};
 	for(let file of ["ChLaw", "ChOrder", "EnLaw", "EnOrder"]) {
 		const lang = file.substring(0, 2).toLowerCase();
@@ -51,9 +86,8 @@ const mkdir = async (path) => {
 		let json = await fsP.readFile(`./source/${file}.json`, 'utf8');
 		json = JSON.parse(json.trim()); /// remove BOM
 		if(!UpdateDate) {
-			const match = json.UpdateDate.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/);
-			console.assert(match);
-			UpdateDate = match[1] + (match[2].length > 1 ? match[2] : ("0" + match[2])) + (match[3].length > 1 ? match[3] : ("0" + match[3]));
+			let [, year, month, date] = json.UpdateDate.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2}) /);
+			UpdateDate = year + (month.length > 1 ? month : ("0" + month)) + (date.length > 1 ? date : ("0" + date));
 			console.log("UpdateDate " + UpdateDate);
 			await fsP.writeFile("./json_split/UpdateDate.txt", UpdateDate);
 			await fsP.writeFile("./json_arrange/UpdateDate.txt", UpdateDate);
@@ -82,4 +116,6 @@ const mkdir = async (path) => {
 		await fsP.writeFile(`./json_split/${lang}/index.json`, json);
 		await fsP.writeFile(`./json_arrange/${lang}/index.json`, json);
 	}
+
+	console.timeEnd("mojLawSplit");
 })();

@@ -33,7 +33,7 @@ async function main() {
         if(match[2].length !== 2) match[2] = '0' + match[2];
         if(match[3].length !== 2) match[3] = '0' + match[3];
         const newDate = match[1] + match[2] + match[3];
-        process.stdout.write(`UpdateDate: ${newDate}\n`);
+        console.log(`UpdateDate: ${newDate}`);
 
         let oldDate = '';
         try {
@@ -54,7 +54,7 @@ async function main() {
                 runBat = "exit\n" + runBat;
                 await fsP.writeFile('./run.bat', runBat, 'utf8');
             }
-            process.stdout.write('sendlaw data not updated yet\n');
+            console.log('sendlaw data not updated yet');
         }
     });
 
@@ -65,11 +65,11 @@ async function main() {
         if(match[2].length !== 2) match[2] = '0' + match[2];
         if(match[3].length !== 2) match[3] = '0' + match[3];
         const newDate = match[1] + match[2] + match[3];
-        process.stdout.write(`UpdateDate: ${newDate}\n`);
+        console.log(`UpdateDate: ${newDate}`);
 
         let oldDate = '';
         try {
-            oldDate = await fsP.readFile('./json_arrange/UpdateDate.txt', 'utf-8');
+            oldDate = await fsP.readFile('./json_split/UpdateDate.txt', 'utf-8');
         }
         catch(e) {}
 
@@ -78,7 +78,7 @@ async function main() {
             await downloadAndUnzip('https://law.moj.gov.tw/api/En/Law/JSON');
             await downloadAndUnzip('https://law.moj.gov.tw/api/En/Order/JSON');
         }
-        else process.stdout.write('swagger data not updated yet\n');
+        else console.log('swagger data not updated yet');
     });
 
     await Promise.allSettled([sendlaw, swagger]);
