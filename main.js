@@ -15,8 +15,12 @@ const mkdir = async (path) => {
 }
 
 (async () => {
-	let dict = await xmlSplit();
+	let dict;
 
+	/**
+	 * Old XML
+	 */
+	dict = await xmlSplit();
 	await mkdir("./json");
 	fsP.copyFile('./xml/UpdateDate.txt', './json/UpdateDate.txt');
 
@@ -28,17 +32,22 @@ const mkdir = async (path) => {
 		return law;
 	}, dict);
 	console.log('All XML converted.');
-
 	await saveSummary(dict);
-})().then(async () => {
+
+
+	/**
+	 * New JSON
+	 */
 	for(let folder of [
 		"split", "split/ch", "split/en",
 		"arrange", "arrange/ch", "arrange/en"
 	]) await mkdir(`./json_${folder}`);
 
 	let UpdateDate;
+	dict = {ch: {}, en: {}};
 	for(let file of ["ChLaw", "ChOrder", "EnLaw", "EnOrder"]) {
 		const lang = file.substring(0, 2).toLowerCase();
+		console.log(`Opening ${file}.json`);
 		let json = await fsP.readFile(`./source/${file}.json`, 'utf8');
 		json = JSON.parse(json.trim()); /// remove BOM
 		if(!UpdateDate) {
@@ -52,7 +61,7 @@ const mkdir = async (path) => {
 
 		json = json.Laws;
 		let law, i = 0;
-		process.stdout.write("Parsing " + file);
+		process.stdout.write("Parsing");
 		while(law = json.pop()) {
 			const pcode = (law.LawURL || law.EngLawURL).slice(-8);
 			const path = `${lang}/${pcode}.json`;
@@ -61,8 +70,16 @@ const mkdir = async (path) => {
 			const arranged = arrange(law);
 			await fsP.writeFile(`./json_arrange/${path}`, JSON.stringify(arranged, null, "\t"));
 
+			if(law.LawURL) dict.ch[pcode] = law.LawName;
+			else dict.en[pcode] = law.EngLawName;
 			if(!(++i % 50)) process.stdout.write(".");
 		}
 		process.stdout.write("\n");
 	}
-});
+	console.log("Saving summary");
+	for(let lang of ["ch", "en"]) {
+		const json = JSON.stringify(dict[lang], null, "\0");
+		await fsP.writeFile(`./json_split/${lang}/index.json`, json);
+		await fsP.writeFile(`./json_arrange/${lang}/index.json`, json);
+	}
+})();

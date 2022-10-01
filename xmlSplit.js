@@ -37,7 +37,7 @@ const main = async () => {
 
 		console.log(`Opening ${src}`);
 		const whole = await fsP.readFile(`./source/${src}`, 'utf8');
-		console.log('Parsing');
+		process.stdout.write('Parsing');
 
 		// 讀取日期。格式有換過，所以寫成新舊版都通用。
 		let [, year, month, date] = whole.match(/UpdateDate="(\d{4})\/?(\d{1,2})\/?(\d{1,2})/);
