@@ -1,3 +1,4 @@
+console.time("mojLawSplit");
 const fsP = require("fs").promises;
 const download = require("./lib/download");
 const parseXML = require("./lib/parseXML");
@@ -41,6 +42,7 @@ const config = [
 	let batch = "";
 
 	for(let isNew = 0; isNew < config.length; ++isNew) {
+		// if(!isNew) continue; /// for test
 		const c = config[isNew];
 		let localDate, remoteDate;
 		const dict = c.dict;
@@ -51,9 +53,13 @@ const config = [
 
 		const files = Object.keys(c.sources);
 		for(let i = 0; i < files.length; ++i) {
+			console.timeLog("mojLawSplit");
 			const url = c.sources[files[i]];
 			await download(url, __dirname + "/source/");
-			const text = (await fsP.readFile(`./source/${files[i]}`, "utf8")).trim().replaceAll("\x00", ""); /// removes BOM; removes null characters in D0070001 §62 (XML only)
+
+			console.timeLog("mojLawSplit");
+			console.log(`Opening ${files[i]}`);
+			const text = (await fsP.readFile(`./source/${files[i]}`, "utf8")).trim(); /// removes BOM
 			if(!remoteDate) {
 				let [, year, month, date] = text.match(/(\d{4})\/(\d{1,2})\/(\d{1,2})/);
 				remoteDate = year + (month > 9 ? month : "0" + month) + (date > 9 ? date : "0" + date);
@@ -156,8 +162,11 @@ const config = [
 		}
 		delete c.dict; // release memory
 	}
-	fsP.unlink("./source/schema.csv");
-	fsP.unlink("./source/manifest.csv");
+	console.timeLog("mojLawSplit");
+	Promise.allSettled([
+		fsP.unlink("./source/schema.csv"),
+		fsP.unlink("./source/manifest.csv")
+	]);
 
 	if(!batch) {
 		console.log("No updates to push.");
@@ -165,4 +174,5 @@ const config = [
 	}
 	batch = `@echo off\n${batch}\npause\n@echo on`;
 	await fsP.writeFile("./gitPush.bat", batch);
+	console.timeEnd("mojLawSplit");
 })();
