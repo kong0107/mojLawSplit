@@ -3,7 +3,8 @@ const arrange = require("./lib/arrange");
 
 (async() => {
     // const files = (await fsP.readdir("./source")).filter(fn => fn.endsWith(".json"));
-    const files = (await fsP.readdir("./source")).filter(fn => fn.startsWith("Ch") && fn.endsWith(".json"));
+    // const files = (await fsP.readdir("./source")).filter(fn => fn.startsWith("Ch") && fn.endsWith(".json"));
+    const files = ["ChOrder.json"];
     for(let fn of files) {
         const lang = fn.substring(0, 2).toLowerCase();
 
