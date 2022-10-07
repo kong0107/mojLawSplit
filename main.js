@@ -33,7 +33,7 @@ const config = [
 			"json_arrange/ch", "json_arrange/en"
 		],
 		localDates: ["json_split/UpdateDate.txt", "json_arrange/UpdateDate.txt"],
-		dict: {ch: {}, en: {}}
+		dict: []
 	}
 ];
 
@@ -87,8 +87,20 @@ const config = [
 					const arranged = arrange(law);
 					await fsP.writeFile(`./json_arrange/${path}`, JSON.stringify(arranged, null, "\t"));
 
-					if(law.LawURL) dict.ch[pcode] = law.LawName;
-					else dict.en[pcode] = law.EngLawName;
+					if(law.LawURL) {
+						const brief = {
+							pcode,
+							LawName: law.LawName,
+							name: arranged.name,
+							discarded: arranged.discarded
+						};
+						if(law.EngLawName) brief.EngLawName = law.EngLawName;
+
+						const match = law.LawName.match(/（([新舊]\x20)?(\d+)\.\d+\.\d+\s*[制訂]定）$/);
+						if(match) brief.year = parseInt(match[2]);
+
+						dict.push(brief);
+					}
 					if(!(++j % 50)) process.stdout.write(".");
 				}
 				process.stdout.write("\n");
@@ -140,11 +152,29 @@ const config = [
 		}
 
 		if(isNew) {
-			for(let lang in dict) {
-				const json = JSON.stringify(dict[lang], null, "\0");
-				await fsP.writeFile(`./json_split/${lang}/index.json`, json);
-				await fsP.writeFile(`./json_arrange/${lang}/index.json`, json);
-			}
+			dict.sort((a, b) => (a.pcode < b.pcode) ? -1 : 1);
+			await fsP.writeFile(
+				"./json_split/ch/index.json",
+				"{\n" + dict.map(law => `"${law.pcode}":"${law.LawName}"`).join(",\n")  + "\n}\n"
+			);
+			await fsP.writeFile(
+				"./json_arrange/ch/index.json",
+				"{\n"
+					+ dict
+						.filter(law =>
+							!law.name.endsWith("表")
+							&& !dict.some(another => another.name === law.name && another.year > law.year) // 同名的裡頭沒有人年份比較大
+						)
+						.map(law => `"${law.pcode}":"${law.name}"`).join(",\n")
+					+ "\n}\n"
+			);
+			const json = "{\n"
+				+ dict.filter(law => law.EngLawName).map(law => `"${law.pcode}":"${law.EngLawName}"`).join(",\n")
+				+ "\n}\n"
+			;
+			await fsP.writeFile("./json_split/en/index.json", json);
+			await fsP.writeFile("./json_arrange/en/index.json", json);
+
 			gits.push("json_split", "json_arrange");
 		}
 		else {

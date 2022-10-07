@@ -61,16 +61,28 @@
 * branch name: `split`
 * 從新版 Swagger API 下載的 JSON 切開而成，無 BOM 。
 * 資料夾僅區分語言，不區分法律與命令。
-* `index.json` 放於各語系資料夾內。
+* `index.json` 放於各語系資料夾內，以 `pcode` 為鍵名，以法規名稱為其值。
 
 ### json_arrange
 * branch name: `arranged`
-* **警告**：格式未定，詳參 `lib/arrange.js` 。
+* **警告**：格式未定。
 * 從新版 Swagger API 下載的 JSON 切開後逐一處理而成。
 * 法規編號欄位是 `pcode` （不是 `PCode` ）。
-* 將「編章節」與「條文」分開儲存，不混在一起。
-  * 章節編號與條號仿照立法院的方式，「第十五條之一」存為 `1501` 。
-  * 「編章節」存為巢狀。
+* `index.json`
+  * 刪除「編制表」與「編組表」類型。
+  * 法規名稱截掉末尾的括號。
+  * 若有同名法規，僅包含最新的。（如正副總統選罷法即有二個版本，「公立學校退休教職員一次退休金及養老給付優惠存款辦法」則有三個 `pcode` 相異的版本）
+* 將「編章節」與「條文」分開儲存，不混在一起。章節編號與條號仿照立法院的方式，「第十五條之一」存為 `1501` 。
+* 鍵名格式若為 UpperCamelCase 即是未更動的原始資料；若為 lowerCamelCase 則是可能被整理過的資料，列表如下：
+  * name: 法規中文名稱，，轉換自 `LawName`，截掉末尾可能出現的的 `（[新舊] 100.10.10 [制訂]定）`。
+  * category: 將 `LawCategory` 拆成陣列。
+  * effectiveNote: 整理 `LawEffectiveNote` ，維持為字串。
+  * discarded: 將 `LawAbandonNote` 的資料型態改為 boolean 。
+  * attachments: 修正 `LawAttachements` 和 `EngLawAttachements` 拼錯字的問題，並將值從陣列改為物件，鍵名即附件 ID ，值為檔名。
+  * histories: 將 `LawHistories` 或 `EngLawHistories` 拆解成陣列，中文版中並去掉每行開頭的「中華民國」。
+  * foreword: 去除 `LawForeword` 多餘的空白。
+  * articles: 條文。
+  * divisions: 巢狀編章節目錄，並標示每個編章節的起迄條號。
 * 轉換條文中的部分字碼（見下節），但附件檔名中的錯別字則不轉換（以避免若有下載需求而檔名不一致）。
 
 ### 字碼轉換原則
