@@ -81,7 +81,7 @@
   * attachments: 修正 `LawAttachements` 和 `EngLawAttachements` 拼錯字的問題，並將值從陣列改為物件，鍵名即附件 ID ，值為檔名。
   * histories: 將 `LawHistories` 或 `EngLawHistories` 拆解成陣列，中文版中並去掉每行開頭的「中華民國」。
   * foreword: 去除 `LawForeword` 多餘的空白。
-  * articles: 條文。除了有表格或算式的外，均處理成巢狀。
+  * articles: 條文。除了有表格或算式的外，中文條文均處理成巢狀。
   * divisions: 巢狀編章節目錄，並標示每個編章節的起迄條號。
 * 轉換條文中的部分字碼（見下節），但附件檔名中的錯別字則不轉換（以避免若有下載需求而檔名不一致）。
 
