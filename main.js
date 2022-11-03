@@ -92,7 +92,10 @@ const config = [
 							pcode,
 							LawName: law.LawName,
 							name: arranged.name,
-							discarded: arranged.discarded
+							discarded: arranged.discarded,
+							category: arranged.category,
+							LawModifiedDate: arranged.LawModifiedDate,
+							LawEffectiveDate: arranged.LawEffectiveDate
 						};
 						if(law.EngLawName) brief.EngLawName = law.EngLawName;
 
@@ -168,6 +171,19 @@ const config = [
 						.map(law => `"${law.pcode}":"${law.name}"`).join(",\n")
 					+ "\n}\n"
 			);
+
+			const csvFields = ["pcode", "name", "category", "LawModifiedDate", "LawEffectiveDate", "discarded"];
+			await fsP.writeFile(
+				"./json_arrange/ch/index.csv",
+				dict.reduce(
+					(csv, law) => csv + csvFields.map(field => {
+						const value = law[field]?.toString() || "";
+						return value.includes(",") ? (`"${value}"`) : value
+					}).join(",") + "\r\n",
+					csvFields.join(",") + "\r\n"
+				)
+			);
+
 			const json = "{\n"
 				+ dict.filter(law => law.EngLawName).map(law => `"${law.pcode}":"${law.EngLawName}"`).join(",\n")
 				+ "\n}\n"
@@ -203,6 +219,6 @@ const config = [
 		batch += "echo \"No updates to push.\"";
 	}
 	batch = `@echo off\n${batch}\npause\n@echo on`;
-	await fsP.writeFile("./gitPush.bat", batch);
+	await fsP.writeFile("./git-push.bat", batch);
 	console.timeEnd("mojLawSplit");
 })();
