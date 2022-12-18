@@ -144,6 +144,7 @@ const config = [
 			batch += [
 				"",
 				`cd ${folder}`,
+				"copy /B ../aliases.json .", // https://stackoverflow.com/questions/7104896/#54233544
 				"git add .",
 				`git commit -m "UpdateDate ${remoteDate}"`,
 				`git tag ${remoteDate}${ext}`,

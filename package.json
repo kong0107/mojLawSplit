@@ -1,6 +1,6 @@
 {
   "name": "mojlawsplit",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "將全國法規資料庫的資料切為許多小檔，各法規逐一存為 XML 與 JSON 。",
   "author": "kong0107",
   "scripts": {
