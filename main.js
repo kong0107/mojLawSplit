@@ -22,10 +22,10 @@ const config = [
 	{
 		title: "new JSON",
 		sources: {
-			"ChLaw.json": "https://law.moj.gov.tw/api/Ch/Law/JSON",
-			"ChOrder.json": "https://law.moj.gov.tw/api/Ch/Order/JSON",
-			"EnLaw.json": "https://law.moj.gov.tw/api/En/Law/JSON",
-			"EnOrder.json": "https://law.moj.gov.tw/api/En/Order/JSON"
+			"ChLaw.json": "https://law.moj.gov.tw/api/data/chlaw.json.zip",
+			"ChOrder.json": "https://law.moj.gov.tw/api/data/chorder.json.zip",
+			"EnLaw.json": "https://law.moj.gov.tw/api/data/enlaw.json.zip",
+			"EnOrder.json": "https://law.moj.gov.tw/api/data/enorder.json.zip"
 		},
 		gits: ["json_split", "json_arrange"],
 		outputs: [
@@ -55,7 +55,7 @@ const config = [
 		for(let i = 0; i < files.length; ++i) {
 			console.timeLog("mojLawSplit");
 			const url = c.sources[files[i]];
-			await download(url, __dirname + "/source/");
+			await download(url, __dirname + "/source/x.zip");
 
 			console.timeLog("mojLawSplit");
 			console.log(`Opening ${files[i]}`);
@@ -77,7 +77,14 @@ const config = [
 			process.stdout.write("Parsing");
 			if(isNew) {
 				const lang = files[i].substring(0, 2).toLowerCase();
-				const laws = JSON.parse(text).Laws;
+				let laws;
+				try {
+					laws = JSON.parse(text).Laws;
+				}
+				catch(err) {
+					console.warn(files[i]);
+					throw err;
+				}
 				let law, j = 0;
 				while(law = laws.pop()) {
 					const pcode = (law.LawURL || law.EngLawURL).slice(-8);
