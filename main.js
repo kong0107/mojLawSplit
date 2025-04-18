@@ -90,9 +90,9 @@ const config = [
 					const pcode = (law.LawURL || law.EngLawURL).slice(-8);
 					const path = `${lang}/${pcode}.json`;
 
-					await fsP.writeFile(`./json_split/${path}`, JSON.stringify(law, null, "  "));
+					await writeOnlyIfDiff(`./json_split/${path}`, JSON.stringify(law, null, "  "));
 					const arranged = arrange(law);
-					await fsP.writeFile(`./json_arrange/${path}`, JSON.stringify(arranged, null, "\t"));
+					await writeOnlyIfDiff(`./json_arrange/${path}`, JSON.stringify(arranged, null, "\t"));
 
 					if(law.LawURL) {
 						const brief = {
@@ -124,10 +124,10 @@ const config = [
 						+ "\r\n</法規>\r\n"
 					;
 					const [, pcode] = law.match(/\?pcode=([A-Z]\d{7})/);
-					await fsP.writeFile(`./xml/${source}/${pcode}.xml`, law);
+					await writeOnlyIfDiff(`./xml/${source}/${pcode}.xml`, law);
 
 					const obj = await parseXML(law);
-					await fsP.writeFile(`./json/${source}/${pcode}.json`, JSON.stringify(obj, null, "\t"));
+					await writeOnlyIfDiff(`./json/${source}/${pcode}.json`, JSON.stringify(obj, null, "\t"));
 
 					if(source === "FalVMingLing") {
 						const brief = {
@@ -230,3 +230,14 @@ const config = [
 	await fsP.writeFile("./git-push.bat", batch);
 	console.timeEnd("mojLawSplit");
 })();
+
+async function writeOnlyIfDiff(path, data) {
+	try {
+		await fsP.access(path, fsP.constants.R_OK);
+		if (data !== await fsP.readFile(path, {encoding: 'utf8'}))
+			throw new Error('go to catch');
+	}
+	catch {
+		await fsPwriteFile(path, data);
+	}
+}
