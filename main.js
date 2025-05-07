@@ -229,6 +229,7 @@ const config = [
 	batch = `@echo off\n${batch}\npause\n@echo on`;
 	await fsP.writeFile("./git-push.bat", batch);
 	console.timeEnd("mojLawSplit");
+	await fsP.unlink(__dirname + "/source/x.zip");
 })();
 
 async function writeOnlyIfDiff(path, data) {
@@ -238,6 +239,6 @@ async function writeOnlyIfDiff(path, data) {
 			throw new Error('go to catch');
 	}
 	catch {
-		await fsPwriteFile(path, data);
+		await fsP.writeFile(path, data);
 	}
 }
