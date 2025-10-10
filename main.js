@@ -37,6 +37,8 @@ const config = [
 	}
 ];
 
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 (async() => {
 	const gits = [];
 	let batch = "";
@@ -47,15 +49,15 @@ const config = [
 		let localDate, remoteDate;
 		const dict = c.dict;
 
-		try {
-			localDate = await fsP.readFile(c.localDates[0], "utf8");
-		} catch(e) {}
+		try { localDate = await fsP.readFile(c.localDates[0], "utf8"); }
+		catch (err) {}
 
 		const files = Object.keys(c.sources);
 		for(let i = 0; i < files.length; ++i) {
 			console.timeLog("mojLawSplit");
 			const url = c.sources[files[i]];
-			await download(url, __dirname + "/source/x.zip");
+			try { await download(url, __dirname + "/source/x.zip"); }
+			catch (err) { return console.error(err); }
 
 			console.timeLog("mojLawSplit");
 			console.log(`Opening ${files[i]}`);
@@ -229,7 +231,8 @@ const config = [
 	batch = `@echo off\n${batch}\npause\n@echo on`;
 	await fsP.writeFile("./git-push.bat", batch);
 	console.timeEnd("mojLawSplit");
-	await fsP.unlink(__dirname + "/source/x.zip");
+	try { await fsP.unlink(__dirname + "/source/x.zip"); }
+	catch (err) {}
 })();
 
 async function writeOnlyIfDiff(path, data) {
