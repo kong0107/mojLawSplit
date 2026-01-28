@@ -22,10 +22,10 @@ const config = [
 	{
 		title: "new JSON",
 		sources: {
-			"ChLaw.json": "https://law.moj.gov.tw/api/data/chlaw.json.zip",
-			"ChOrder.json": "https://law.moj.gov.tw/api/data/chorder.json.zip",
-			"EnLaw.json": "https://law.moj.gov.tw/api/data/enlaw.json.zip",
-			"EnOrder.json": "https://law.moj.gov.tw/api/data/enorder.json.zip"
+			"ChLaw.json": "https://law.moj.gov.tw/api/ch/law/json",
+			"ChOrder.json": "https://law.moj.gov.tw/api/ch/order/json",
+			"EnLaw.json": "https://law.moj.gov.tw/api/en/law/json",
+			"EnOrder.json": "https://law.moj.gov.tw/api/en/order/json"
 		},
 		gits: ["json_split", "json_arrange"],
 		outputs: [
